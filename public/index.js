@@ -132,7 +132,7 @@ $(document).ready(function () {
         var message = $('#typeBar').val();
         $('.card-body').append(getSendMessageHTML(message, "https://via.placeholder.com/50"));
         $('#typeBar').val("");
-        rainbowSDK.im.getSendMessageHTML(associatedConversation, message);
+        rainbowSDK.im.sendMessageToConversation(associatedConversation, message);
     });
 
 
