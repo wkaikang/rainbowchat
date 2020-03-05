@@ -1,8 +1,9 @@
-var associatedConversation = null;
-var selectedContact = null;
+function chatroom(username, password) {
+    var associatedConversation = null;
+    var selectedContact = null;
 
-/* Wait for the page to load */
-$(document).ready(function () {
+    /* Wait for the page to load */
+
     console.log("[DEMO] :: Rainbow Application started!");
 
 
@@ -17,8 +18,8 @@ $(document).ready(function () {
     var onReady = function onReady() {
         console.log("[DEMO] :: On SDK Ready !");
         // do something when the SDK is ready
-        var myRainbowLogin = "pungtuckwei@gmail.com";       // Replace by your login
-        var myRainbowPassword = "q%X8oJ6ZFz-5"; // Replace by your password
+        var myRainbowLogin = username;       // Replace by your login
+        var myRainbowPassword = password; // Replace by your password
 
 
         // The SDK for Web is ready to be used, so you can sign in
@@ -66,9 +67,25 @@ $(document).ready(function () {
             .then(result => rainbowSDK.conversations.openConversationForContact(result))
             .then(function (conversation) {
                 associatedConversation = conversation;
+                return conversation;
+        
             })
-            .then(rainbowSDK.im.getMessagesFromConversation(associatedConversation, 30))
-            .then(result => console.log(result))
+            .then(conversation => rainbowSDK.im.getMessagesFromConversation(conversation, 30))
+            .then(result => {
+                if (result.messages){
+                    var messages = result.messages;
+                    for (var message in messages){
+                        if (messages[message].from.loginEmail === username){
+                            $('.card-body').append(getSendMessageHTML(messages[message].data,messages[message].from.avatar.src));
+                        }
+                        else{
+                            $('.card-body').append(getReceivedMessageHTML(messages[message].data,messages[message].from.avatar.src));
+                        }
+
+                    }
+                }
+                console.log(result)
+            })
             .catch(function (err) {
                 // An error occurs (e.g. bad credentials). Application could be informed that sign in has failed
                 console.log(err);
@@ -91,42 +108,25 @@ $(document).ready(function () {
     /* Load the SDK */
     rainbowSDK.load();
 
-    var currentPage = 0;
-
-    // Get Previous Messages
-    rainbowSDK.im.getMessagesFromConversation(associatedConversation, 30).then(function () {
-        // The conversation object is updated with the messages retrieved from the server (same reference)
-
-        // Call a function to display the new messages received
-        // displayMessages(associatedConversation, currentPage);
-        console.log(associatedConversation);
-        // Display something if there is possibly more messages on the server
-        if (!associatedConversation.historyComplete) {
-            // e.g. display a button to get more messages
-        }
-    })
 
     // New Message Received
     let onNewMessageReceived = function (event) {
-        let message = event.detail.message;
-        let conversation = event.detail.conversation
+        let message = event.detail.message.data;
+        let conversation = event.detail.conversation;
 
         // Do something with the new message received
-        $('.card-body').append(getReceivedMessageHTML(message, selectedContact.avatar.src));
+        $('.card-body').append(getReceivedMessageHTML(message, "https://via.placeholder.com/50"));
     };
 
     document.addEventListener(rainbowSDK.im.RAINBOW_ONNEWIMMESSAGERECEIVED, onNewMessageReceived)
 
     function getReceivedMessageHTML(message, avatar) {
-        return '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="'+avatar+'" class="rounded-circle user_img_msg"></div><div class="msg_container">'+ message + '<span class="msg_time">' + '9:00 AM, Today' + '</span></div></div>'
+        return '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="' + avatar + '" class="rounded-circle user_img_msg"></div><div class="msg_container">' + message + '<span class="msg_time">' + '9:00 AM, Today' + '</span></div></div>'
     }
     function getSendMessageHTML(message, avatar) {
-        return '<div class="d-flex justify-content-end mb-4"><div class="msg_container_send">'+message+'<span class="msg_time_send">'+'9:10 AM, Today'+'</span></div><div class="img_cont_msg"><img src="'+avatar+'" class="rounded-circle user_img_msg"></div></div>';
+        return '<div class="d-flex justify-content-end mb-4"><div class="msg_container_send">' + message + '<span class="msg_time_send">' + '9:10 AM, Today' + '</span></div><div class="img_cont_msg"><img src="' + avatar + '" class="rounded-circle user_img_msg"></div></div>';
     }
 
-    /*
-        UI Interactions
-    */
     $('.send_btn').on('click', function () {
         // Send message
         var message = $('#typeBar').val();
@@ -134,6 +134,23 @@ $(document).ready(function () {
         $('#typeBar').val("");
         rainbowSDK.im.sendMessageToConversation(associatedConversation, message);
     });
+}
+/*
+    UI Interactions
+*/
+$(document).ready(function () {
+    $('#loginbutton').on('click', function () {
+        var username = $('#username').val();
+        var password = $('#password').val();
+        if (username.length>0 && password.length>0){
+            chatroom(username, password);
+            $('#login').hide();
+            $('#chatfn').show();
+
+        }
+
+    });
+
 
 
 });
