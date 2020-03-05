@@ -1,0 +1,17 @@
+{
+  "name": "myfirstrainbowproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Richard Pung",
+  "license": "ISC",
+  "dependencies": {
+    "rainbow-web-sdk": "^1.67.0"
+  },
+  "devDependencies": {
+    "http-server": "^0.12.1"
+  }
+}
