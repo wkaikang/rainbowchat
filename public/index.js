@@ -1,6 +1,9 @@
+//global variables
+var myAvatar;
+var chatAvatar;
+
 function chatroom(username, password) {
     var associatedConversation = null;
-    var selectedContact = null;
 
     /* Wait for the page to load */
 
@@ -77,9 +80,11 @@ function chatroom(username, password) {
                     for (var message in messages){
                         if (messages[message].from.loginEmail === username){
                             $('.card-body').append(getSendMessageHTML(messages[message].data,messages[message].from.avatar.src));
+                            myAvatar = messages[message].from.avatar.src;
                         }
                         else{
                             $('.card-body').append(getReceivedMessageHTML(messages[message].data,messages[message].from.avatar.src));
+                            chatAvatar = messages[message].from.avatar.src;c
                         }
 
                     }
@@ -113,12 +118,12 @@ function chatroom(username, password) {
     let onNewMessageReceived = function (event) {
         let message = event.detail.message.data;
         let conversation = event.detail.conversation;
-
         // Do something with the new message received
-        $('.card-body').append(getReceivedMessageHTML(message, "https://via.placeholder.com/50"));
+        $('.card-body').append(getReceivedMessageHTML(message, chatAvatar));
     };
 
     document.addEventListener(rainbowSDK.im.RAINBOW_ONNEWIMMESSAGERECEIVED, onNewMessageReceived)
+
 
     function getReceivedMessageHTML(message, avatar) {
         return '<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="' + avatar + '" class="rounded-circle user_img_msg"></div><div class="msg_container">' + message + '<span class="msg_time">' + '9:00 AM, Today' + '</span></div></div>'
@@ -130,7 +135,8 @@ function chatroom(username, password) {
     $('.send_btn').on('click', function () {
         // Send message
         var message = $('#typeBar').val();
-        $('.card-body').append(getSendMessageHTML(message, "https://via.placeholder.com/50"));
+
+        $('.card-body').append(getSendMessageHTML(message, myAvatar));
         $('#typeBar').val("");
         rainbowSDK.im.sendMessageToConversation(associatedConversation, message);
     });
