@@ -9,6 +9,7 @@
   "author": "Richard Pung",
   "license": "ISC",
   "dependencies": {
+    "mongodb": "^3.5.4",
     "rainbow-web-sdk": "^1.67.0"
   },
   "devDependencies": {
